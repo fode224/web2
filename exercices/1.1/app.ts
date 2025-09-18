@@ -1,4 +1,6 @@
 import express, { ErrorRequestHandler } from "express";
+import filmRouter from "./routes/films"
+
 
 
 const app = express();
@@ -13,6 +15,8 @@ app.use((_req, _res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use("/films",filmRouter);
+console.log("Router /films monté");
 
 
 
