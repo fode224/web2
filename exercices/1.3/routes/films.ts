@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { Film } from "../types";
-import path from "node:path";
-import { parse } from "../utils/json";
+import { newFilm } from "../types";
+
+
 
 
 console.log("Films router chargé");
 const router =Router();
 
 
-const jsonDbPath = path.join(__dirname, "/../data/films.json");
+
   const films: Film[] = [
     {
       id: 1,
@@ -48,30 +49,28 @@ router.get("/error", (_req, _res, _next) => {
  * Read all the films from the menu
  */
 
-router.get("/",(req, res)=>{
-    if(req.query.order && typeof req.query.order !=="string"){
-        return res.sendStatus(400);
-     }
+router.get("/", (req, res) => {
 
-     const orderByTitle=
-     typeof req.query.order === "string" && req.query.order.includes("title")
-     ?req.query.order
-     :undefined;
+  const minimumDuration = Number(req.query["minimum-duration"]);
 
-    let orderedMenu: Film[]= [];
-    const fil = parse(jsonDbPath,films);
-    if(orderByTitle)
-        orderedMenu = [...fil].sort((a,b) => a.title.localeCompare(b.title));
-    if(orderByTitle === "-title") orderedMenu = orderedMenu.reverse();
-    return res.json(orderedMenu.length ===0 ? films : orderedMenu);
+
+  if (!req.query["minimum-duration"]) return res.json(films);
+
+  if (isNaN(minimumDuration)) return res.status(400).send("must be a number");
+
+  if (minimumDuration <= 0) return res.status(400).send("must be positive number");
+
+  const filteredFilms = films.filter((film) => film.duration >= minimumDuration);
+  return res.json(filteredFilms);
 });
+
 /**
  * GET film by id
  */
 
 router.get("/:id",(req,res)=>{
   const id =Number(req.params.id );
-  console.log("films disponibles :", films);
+
   const film = films.find((film)=>film.id ===id );
 
   if  (!film){
@@ -79,6 +78,51 @@ router.get("/:id",(req,res)=>{
   }
   return res.json(film);
 
+});
+
+router.post("/",(req,res)=>{
+
+  const body: unknown = req.body;
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !("title" in body) ||
+    !("director" in body) ||
+    !("duration" in body) ||
+    !("budget" in body) ||
+    !("description" in body) ||
+    !("imageUrl" in body) ||
+    typeof body.title !== "string" ||
+    typeof body.director !== "string" ||
+    typeof body.duration !== "number" ||
+    typeof body.budget !== "number" ||
+    typeof body.description !== "string" ||
+    typeof body.imageUrl !== "string"
+   ) {
+    return res.sendStatus(400).send('bad film data');
+  }
+  
+  const { title , director , duration , budget ,description , imageUrl} = body as newFilm;
+  if  (!title || !director || !duration || !budget || !description || !imageUrl){
+    return res.status(400).send('bad  film data');
+  }
+
+  const nextId = 
+  films.reduce((maxId, film) =>(film.id>maxId ? film.id : maxId),0 )+1;
+
+  const newFilm: Film={
+
+  id:nextId,
+  title,
+  director,
+  duration,
+  budget,
+  description,
+  imageUrl,
+  };
+
+  films.push(newFilm);
+  return res.json(newFilm);
 });
 
 export default router;
