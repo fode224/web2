@@ -26,5 +26,7 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   return res.status(500).send("Something broke!");
 };
 
+
 app.use(errorHandler);
+
 export default app;
