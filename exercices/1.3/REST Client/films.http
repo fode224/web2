@@ -1,2 +1,6 @@
 GET http://localhost:3000/films
-salut
+
+
+//get a film with id
+###
+GET http://localhost:3000/films/2

@@ -1,4 +1,4 @@
-import {Router} from "express";
+import { Router } from "express";
 import { Film } from "../types";
 import path from "node:path";
 import { parse } from "../utils/json";
@@ -9,7 +9,7 @@ const router =Router();
 
 
 const jsonDbPath = path.join(__dirname, "/../data/films.json");
-  const defaultFilms: Film[] = [
+  const films: Film[] = [
     {
       id: 1,
       title: "Inception",
@@ -59,11 +59,26 @@ router.get("/",(req, res)=>{
      :undefined;
 
     let orderedMenu: Film[]= [];
-    const films = parse(jsonDbPath,defaultFilms);
+    const fil = parse(jsonDbPath,films);
     if(orderByTitle)
-        orderedMenu = [...films].sort((a,b) => a.title.localeCompare(b.title));
+        orderedMenu = [...fil].sort((a,b) => a.title.localeCompare(b.title));
     if(orderByTitle === "-title") orderedMenu = orderedMenu.reverse();
     return res.json(orderedMenu.length ===0 ? films : orderedMenu);
+});
+/**
+ * GET film by id
+ */
+
+router.get("/:id",(req,res)=>{
+  const id =Number(req.params.id );
+  console.log("films disponibles :", films);
+  const film = films.find((film)=>film.id ===id );
+
+  if  (!film){
+    return res.status(404).send('film not found');
+  }
+  return res.json(film);
+
 });
 
 export default router;
