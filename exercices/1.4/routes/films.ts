@@ -81,6 +81,10 @@ router.get("/", (req, res) => {
   );
  }
 
+ if(req.query.sort ==='duration'){
+    result =[...result].sort((a,b)=>a.duration -b.duration);
+ }
+
    
   
 

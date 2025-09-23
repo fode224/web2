@@ -33,3 +33,8 @@ Content-Type: application/json
 
 GET http://localhost:3000/films?start=In
 
+###
+//get fims sorted by duration
+
+GET http://localhost:3000/films?sort=duration
+
