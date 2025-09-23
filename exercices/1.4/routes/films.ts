@@ -51,18 +51,44 @@ router.get("/error", (_req, _res, _next) => {
 
 router.get("/", (req, res) => {
 
-  const minimumDuration = Number(req.query["minimum-duration"]);
+  let result = films;
+
+  
+
+//filter in the duration
+  if (req.query["minimum-duration"]){
+
+    const minimumDuration = Number(req.query["minimum-duration"]);
+
+     if (isNaN(minimumDuration)){
+      return res.status(400).send("must be a number");
+  } 
+
+  if (minimumDuration <= 0){
+       return res.status(400).send("must be positive number");
+       
+  } 
+
+ result = result.filter((film) => film.duration >= minimumDuration);
+ }
+
+ // filter in the first characther
+ if(req.query.start && typeof req.query.start ==="string"){
+  const start = req.query.start;
+
+  result=result.filter((film)=>
+    film.title.startsWith(start)
+  );
+ }
+
+   
   
 
 
-  if (!req.query["minimum-duration"]) return res.json(films);
+  return res.json(result);
 
-  if (isNaN(minimumDuration)) return res.status(400).send("must be a number");
+ 
 
-  if (minimumDuration <= 0) return res.status(400).send("must be positive number");
-
-  const filteredFilms = films.filter((film) => film.duration >= minimumDuration);
-  return res.json(filteredFilms);
 });
 
 /**
