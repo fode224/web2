@@ -38,3 +38,9 @@ GET http://localhost:3000/films?start=In
 
 GET http://localhost:3000/films?sort=duration
 
+###
+//delete a movie
+DELETE  http://localhost:3000/films/1
+
+
+

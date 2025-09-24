@@ -137,6 +137,13 @@ router.post("/",(req,res)=>{
   if  (!title || !director || !duration || !budget || !description || !imageUrl){
     return res.status(400).send('bad  film data');
   }
+  const conflict = films.some(
+    (f)=> f.title === title && f.director === director
+  );
+
+  if(conflict){
+    return res.status(409).send("film already exists");
+  }
 
   const nextId = 
   films.reduce((maxId, film) =>(film.id>maxId ? film.id : maxId),0 )+1;
@@ -152,12 +159,34 @@ router.post("/",(req,res)=>{
   imageUrl,
   };
 
-  if(body.title ==newFilm.title || body.director === newFilm.director){
-    return res.status(409).send('this film is already exist');
-  }
+ 
 
   films.push(newFilm);
   return res.status(201).json(newFilm);
+});
+
+/**
+ * Delete a movie
+ */
+
+router.delete("/:id",(req,res)=>{
+  const id = Number(req.params.id);
+
+  if(isNaN(id)){
+    return res.status(400).send("must be a id");
+  }
+
+  const index =films.findIndex((film)=>film.id===id);
+  
+  if(index===-1){
+    return res.status(404).send("film not found");
+  }
+
+  films.splice(index,1);
+
+  return res.sendStatus(204);
+
+
 });
 
 export default router;
