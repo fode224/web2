@@ -53,8 +53,6 @@ router.get("/", (req, res) => {
 
   let result = films;
 
-  
-
 //filter in the duration
   if (req.query["minimum-duration"]){
 
@@ -85,13 +83,8 @@ router.get("/", (req, res) => {
     result =[...result].sort((a,b)=>a.duration -b.duration);
  }
 
-   
-  
+  return res.status(200).json(result);
 
-
-  return res.json(result);
-
- 
 
 });
 
@@ -102,14 +95,21 @@ router.get("/", (req, res) => {
 router.get("/:id",(req,res)=>{
   const id =Number(req.params.id );
 
+  if(isNaN(id)){
+    return res.status(400).send('bad request');
+  }
+
   const film = films.find((film)=>film.id ===id );
 
   if  (!film){
     return res.status(404).send('film not found');
   }
-  return res.json(film);
+  return res.status(200).json(film);
 
 });
+/**
+ * create a film
+ */
 
 router.post("/",(req,res)=>{
 
@@ -152,8 +152,12 @@ router.post("/",(req,res)=>{
   imageUrl,
   };
 
+  if(body.title ==newFilm.title || body.director === newFilm.director){
+    return res.status(409).send('this film is already exist');
+  }
+
   films.push(newFilm);
-  return res.json(newFilm);
+  return res.status(201).json(newFilm);
 });
 
 export default router;
