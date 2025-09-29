@@ -185,7 +185,33 @@ router.delete("/:id",(req,res)=>{
   films.splice(index,1);
 
   return res.sendStatus(204);
+});
 
+/**
+ * Patch films
+ */
+router.patch("/:id",(req,res)=>{
+   const id = Number(req.params.id);
+
+  if(isNaN(id)){
+    return res.status(400).send("must be a id");
+  }
+
+  return null;
+
+});
+
+/**
+ * Put films
+ */
+router.put("/:id",(req,res)=>{
+  const id = Number(req.params.id);
+
+  if(isNaN(id)){
+    return res.status(400).send("must be a id");
+  }
+
+  return null;
 
 });
 
