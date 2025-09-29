@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Film } from "../types";
 import { newFilm } from "../types";
+import { isFilm } from "../type-guards";
 
 
 
@@ -114,24 +115,12 @@ router.get("/:id",(req,res)=>{
 router.post("/",(req,res)=>{
 
   const body: unknown = req.body;
-  if (
-    !body ||
-    typeof body !== "object" ||
-    !("title" in body) ||
-    !("director" in body) ||
-    !("duration" in body) ||
-    !("budget" in body) ||
-    !("description" in body) ||
-    !("imageUrl" in body) ||
-    typeof body.title !== "string" ||
-    typeof body.director !== "string" ||
-    typeof body.duration !== "number" ||
-    typeof body.budget !== "number" ||
-    typeof body.description !== "string" ||
-    typeof body.imageUrl !== "string"
-   ) {
+  if(!isFilm(body)){
     return res.sendStatus(400).send('bad film data');
   }
+     
+   
+  
   
   const { title , director , duration , budget ,description , imageUrl} = body as newFilm;
   if  (!title || !director || !duration || !budget || !description || !imageUrl){
@@ -196,6 +185,20 @@ router.patch("/:id",(req,res)=>{
   if(isNaN(id)){
     return res.status(400).send("must be a id");
   }
+  const film = films.find((film) => film.id ===id);
+
+  if(!film){
+    return res.status(404).send('movie not found ');
+  }
+
+  const updatedFilm :unknown = req.body;
+
+  if(!isFilm(updatedFilm)){
+    return res.status(400).send("bad request");
+  }
+
+
+
 
   return null;
 
