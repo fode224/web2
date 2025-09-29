@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { Film } from "../types";
 import { newFilm } from "../types";
-import { isFilm } from "../type-guards";
 
 
 
@@ -115,12 +114,24 @@ router.get("/:id",(req,res)=>{
 router.post("/",(req,res)=>{
 
   const body: unknown = req.body;
-  if(!isFilm(body)){
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !("title" in body) ||
+    !("director" in body) ||
+    !("duration" in body) ||
+    !("budget" in body) ||
+    !("description" in body) ||
+    !("imageUrl" in body) ||
+    typeof body.title !== "string" ||
+    typeof body.director !== "string" ||
+    typeof body.duration !== "number" ||
+    typeof body.budget !== "number" ||
+    typeof body.description !== "string" ||
+    typeof body.imageUrl !== "string"
+   ) {
     return res.sendStatus(400).send('bad film data');
   }
-     
-   
-  
   
   const { title , director , duration , budget ,description , imageUrl} = body as newFilm;
   if  (!title || !director || !duration || !budget || !description || !imageUrl){
@@ -179,29 +190,37 @@ router.delete("/:id",(req,res)=>{
 /**
  * Patch films
  */
-router.patch("/:id",(req,res)=>{
-   const id = Number(req.params.id);
+router.patch("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) return res.status(400).send("must be a valid id");
 
-  if(isNaN(id)){
-    return res.status(400).send("must be a id");
+  const film = films.find(f => f.id === id);
+  if (!film) return res.status(404).send("movie not found");
+
+  const body: unknown = req.body;
+  if (!body || typeof body !== "object") return res.status(400).send("bad film data");
+
+  const b = body as Partial<Film>; 
+
+  if (
+    (b.title !== undefined && typeof b.title !== "string") ||
+    (b.director !== undefined && typeof b.director !== "string") ||
+    (b.duration !== undefined && typeof b.duration !== "number") ||
+    (b.budget !== undefined && typeof b.budget !== "number") ||
+    (b.description !== undefined && typeof b.description !== "string") ||
+    (b.imageUrl !== undefined && typeof b.imageUrl !== "string")
+  ) {
+    return res.status(400).send("bad film data");
   }
-  const film = films.find((film) => film.id ===id);
 
-  if(!film){
-    return res.status(404).send('movie not found ');
-  }
+  if (b.title !== undefined) film.title = b.title;
+  if (b.director !== undefined) film.director = b.director;
+  if (b.duration !== undefined) film.duration = b.duration;
+  if (b.budget !== undefined) film.budget = b.budget;
+  if (b.description !== undefined) film.description = b.description;
+  if (b.imageUrl !== undefined) film.imageUrl = b.imageUrl;
 
-  const updatedFilm :unknown = req.body;
-
-  if(!isFilm(updatedFilm)){
-    return res.status(400).send("bad request");
-  }
-
-
-
-
-  return null;
-
+  return res.json(film);
 });
 
 /**

@@ -3,26 +3,19 @@ import { Film } from "./types";
 
 
 export function isFilm(body: unknown): body is Film {
-  if (
-    !body || // null / undefined
-    typeof body !== "object" ||
-    !("title" in body) ||
-    !("director" in body) ||
-    !("duration" in body) ||
-    typeof body.title !== "string" ||
-    typeof body.director !== "string" ||
-    typeof body.duration !== "number" ||
-    !body.title.trim() ||
-    !body.director.trim() ||
-    body.duration <= 0 ||
+  if (typeof body !== "object" || body === null) return false;
 
-    
-    ("budget" in body && typeof body.budget !== "number") ||
-    ("description" in body && typeof body.description !== "string") ||
-    ("imageUrl" in body && typeof body.imageUrl !== "string")
-  ) {
-    return false;
-  }
+  const b = body as Partial<Film>;
 
-  return true;
+  return (
+    typeof b.title === "string" &&
+    b.title.trim().length > 0 &&
+    typeof b.director === "string" &&
+    b.director.trim().length > 0 &&
+    typeof b.duration === "number" &&
+    b.duration > 0 &&
+    (b.budget === undefined || typeof b.budget === "number") &&
+    (b.description === undefined || typeof b.description === "string") &&
+    (b.imageUrl === undefined || typeof b.imageUrl === "string")
+  );
 }
