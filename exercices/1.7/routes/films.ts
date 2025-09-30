@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { Film } from "../types";
 import { newFilm } from "../types";
+import { isFilm } from "../utils/type-guards";
+import path from "node:path";
+import { serialize,parse } from "../utils/json";
+const jsonDbPath = path.join(__dirname,"/../data/films.json");
 
 
 
@@ -10,7 +14,7 @@ const router =Router();
 
 
 
-  const films: Film[] = [
+  const defaultFilms: Film[] = [
     {
       id: 1,
       title: "Inception",
@@ -50,11 +54,13 @@ router.get("/error", (_req, _res, _next) => {
  */
 
 router.get("/", (req, res) => {
-
-  let result = films;
+  const films =parse(jsonDbPath,defaultFilms);
 
 //filter in the duration
-  if (req.query["minimum-duration"]){
+  if (!req.query["minimum-duration"]){
+    return res.json(films);
+  }
+
 
     const minimumDuration = Number(req.query["minimum-duration"]);
 
@@ -67,26 +73,13 @@ router.get("/", (req, res) => {
        
   } 
 
- result = result.filter((film) => film.duration >= minimumDuration);
- }
+ const filter= films.filter((film) => film.duration >= minimumDuration);
 
- // filter in the first characther
- if(req.query.start && typeof req.query.start ==="string"){
-  const start = req.query.start;
-
-  result=result.filter((film)=>
-    film.title.startsWith(start)
-  );
- }
-
- if(req.query.sort ==='duration'){
-    result =[...result].sort((a,b)=>a.duration -b.duration);
- }
-
-  return res.status(200).json(result);
+  return res.status(200).json(filter);
+  }
 
 
-});
+);
 
 /**
  * GET film by id
@@ -98,6 +91,7 @@ router.get("/:id",(req,res)=>{
   if(isNaN(id)){
     return res.status(400).send('bad request');
   }
+  const films =parse(jsonDbPath,defaultFilms);
 
   const film = films.find((film)=>film.id ===id );
 
@@ -137,7 +131,8 @@ router.post("/",(req,res)=>{
   if  (!title || !director || !duration || !budget || !description || !imageUrl){
     return res.status(400).send('bad  film data');
   }
-  const conflict = films.some(
+  const films =parse(jsonDbPath,defaultFilms);
+  const conflict = defaultFilms.some(
     (f)=> f.title === title && f.director === director
   );
 
@@ -146,7 +141,7 @@ router.post("/",(req,res)=>{
   }
 
   const nextId = 
-  films.reduce((maxId, film) =>(film.id>maxId ? film.id : maxId),0 )+1;
+  defaultFilms.reduce((maxId, film) =>(film.id>maxId ? film.id : maxId),0 )+1;
 
   const newFilm: Film={
 
@@ -161,7 +156,8 @@ router.post("/",(req,res)=>{
 
  
 
-  films.push(newFilm);
+  defaultFilms.push(newFilm);
+  serialize(jsonDbPath,films);
   return res.status(201).json(newFilm);
 });
 
@@ -171,18 +167,20 @@ router.post("/",(req,res)=>{
 
 router.delete("/:id",(req,res)=>{
   const id = Number(req.params.id);
+   const films =parse(jsonDbPath,defaultFilms);
 
   if(isNaN(id)){
     return res.status(400).send("must be a id");
   }
 
-  const index =films.findIndex((film)=>film.id===id);
+  const index =defaultFilms.findIndex((film)=>film.id===id);
   
   if(index===-1){
     return res.status(404).send("film not found");
   }
 
-  films.splice(index,1);
+  defaultFilms.splice(index,1);
+  serialize(jsonDbPath,films);
 
   return res.sendStatus(204);
 });
@@ -193,6 +191,7 @@ router.delete("/:id",(req,res)=>{
 router.patch("/:id", (req, res) => {
   const id = Number(req.params.id);
   if (isNaN(id)) return res.status(400).send("must be a valid id");
+   const films =parse(jsonDbPath,defaultFilms);
 
   const film = films.find(f => f.id === id);
   if (!film) return res.status(404).send("movie not found");
@@ -205,10 +204,12 @@ router.patch("/:id", (req, res) => {
   if (
     (b.title !== undefined && typeof b.title !== "string") ||
     (b.director !== undefined && typeof b.director !== "string") ||
-    (b.duration !== undefined && typeof b.duration !== "number") ||
-    (b.budget !== undefined && typeof b.budget !== "number") ||
+    (  typeof b.duration !== "number" || b.duration<=0) ||
+    ( typeof b.budget !== "number" || b.budget<=0) ||
     (b.description !== undefined && typeof b.description !== "string") ||
-    (b.imageUrl !== undefined && typeof b.imageUrl !== "string")
+    (b.imageUrl !== undefined && typeof b.imageUrl !== "string") 
+
+    
   ) {
     return res.status(400).send("bad film data");
   }
@@ -219,6 +220,7 @@ router.patch("/:id", (req, res) => {
   if (b.budget !== undefined) film.budget = b.budget;
   if (b.description !== undefined) film.description = b.description;
   if (b.imageUrl !== undefined) film.imageUrl = b.imageUrl;
+  serialize(jsonDbPath,films);
 
   return res.json(film);
 });
@@ -232,8 +234,38 @@ router.put("/:id",(req,res)=>{
   if(isNaN(id)){
     return res.status(400).send("must be a id");
   }
+   const films =parse(jsonDbPath,defaultFilms);
+    const filmIndex = films.findIndex(f => f.id === id);
+  if (filmIndex===-1) return res.status(404).send("movie not found");
 
-  return null;
+  const body: unknown = req.body;
+ 
+
+
+  if(!isFilm(body)){
+    return res.sendStatus(400);
+  }
+
+
+  const updatedFilm:Film ={
+    id,
+    title:body.title,
+    director:body.director,
+    duration:body.duration,
+    budget:body.budget,
+    description:body.description,
+    imageUrl:body.imageUrl,
+
+  };
+
+  films[filmIndex] = updatedFilm;
+  serialize(jsonDbPath,films);
+  return res.json(updatedFilm);
+
+  
+
+
+  
 
 });
 
