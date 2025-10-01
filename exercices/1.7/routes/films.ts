@@ -60,8 +60,6 @@ router.get("/", (req, res) => {
   if (!req.query["minimum-duration"]){
     return res.json(films);
   }
-
-
     const minimumDuration = Number(req.query["minimum-duration"]);
 
      if (isNaN(minimumDuration)){
