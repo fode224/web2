@@ -28,7 +28,7 @@ const pizzas = [
 
 const PizzaMenu = () => {
   return (
-    <table>
+    <table className="pizza-menu">
       <thead>
         <tr>
           <th>Pizza</th>
@@ -37,7 +37,7 @@ const PizzaMenu = () => {
       </thead>
       <tbody>
         {pizzas.map((pizza) => (
-          <tr>
+          <tr key={pizza.id}>
             <td>{pizza.title}</td>
             <td>{pizza.content}</td>
           </tr>

@@ -10,7 +10,7 @@ import "./PizzaMenu.css"
       <p>My HomePage</p>
       <p>
         Because we love JS, you can also click on the header to stop / start the
-        music ; )
+        music ; 
       </p>
       <audio id="audioPlayer" controls autoPlay>
         <source src={sound} type="audio/mpeg" />
