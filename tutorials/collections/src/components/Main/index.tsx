@@ -1,8 +1,11 @@
-import sound from "./assets/sounds/Infecticide-11-Pizza-Spinoza.mp3"
-
+import sound from "../../assets/sounds/Infecticide-11-Pizza-Spinoza.mp3"
+import "./Main.css";
+import PizzaMenu from "./PizzaMenu";
+import "./PizzaMenu.css"
 
  export const Main = () => {
   return (
+    
     <main>
       <p>My HomePage</p>
       <p>
@@ -13,6 +16,7 @@ import sound from "./assets/sounds/Infecticide-11-Pizza-Spinoza.mp3"
         <source src={sound} type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
+      <PizzaMenu />
     </main>
   );
 };
