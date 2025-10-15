@@ -3,6 +3,7 @@ import Cinema from "./Cinema";
 import Footer from "./Footer";
 import Header from "./Header";
 import PageTitle from "./PageTitle";
+import "./App.css";
 
 const App = () => {
   const pageTitle = "Informations sur les films dans les cinémas";
