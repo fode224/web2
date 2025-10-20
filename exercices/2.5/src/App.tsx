@@ -18,7 +18,7 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1> react + vite</h1>
+      <h1> vite + react</h1>
       <div className="card">
         <ClickCounter title='jsp'
         message='You are a master in the art of clicking'
