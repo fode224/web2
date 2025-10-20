@@ -18,9 +18,11 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>vite + react</h1>
+      <h1> react + vite</h1>
       <div className="card">
-        <ClickCounter/>
+        <ClickCounter title='jsp'
+        message='ez'/>
+        
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
