@@ -21,7 +21,8 @@ function App() {
       <h1> react + vite</h1>
       <div className="card">
         <ClickCounter title='jsp'
-        message='ez'/>
+        message='You are a master in the art of clicking'
+        messageClick='Please click on me now!'/>
         
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
