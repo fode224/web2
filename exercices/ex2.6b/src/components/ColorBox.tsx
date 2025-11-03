@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./ColorBox.css";
 
-const colors = ["red","green","blue","yellow","violet"];
+const colors = ["red","green","blue","yellow","violet","cyan","grey","black"];
 
 const ColorBox=() =>{
     const[currentColor,setColor]=useState(0);
