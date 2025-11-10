@@ -6,5 +6,11 @@ interface Movie{
     description?:string,
     budget?:number
 }
+type NewMovie= Omit<Movie, "id">;
 
-export type {Movie};
+interface MovieContext{
+    movies:Movie[];
+    onMovieAdded:(newMovie:NewMovie)=>void;
+}
+
+export type {Movie,NewMovie,MovieContext};

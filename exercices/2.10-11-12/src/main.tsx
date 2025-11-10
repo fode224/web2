@@ -6,6 +6,7 @@ import App from './components/Main/App'
 import HomePage from './page/HomePage';
 import CinemaPage from './page/CinemaPage';
 import MovieListPage from './page/MovieListPage';
+import AddMoviePage from './components/pages/AddMoviePage';
 
 const router=createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router=createBrowserRouter([
       {
         path:"movie-list",
         element:<MovieListPage />
+      },
+      {
+        path:"add-movie",
+        element:<AddMoviePage/>
       }
       
 
