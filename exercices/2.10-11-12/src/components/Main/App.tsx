@@ -3,11 +3,12 @@ import"./App.css";
 import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 import NavBar from '../../Navbar';
-import type { Movie, MovieContext } from '../../types';
+import type { Movie, MovieContext,NewMovie} from '../../types';
 import { useState } from 'react';
 
 const defaultMovies: Movie[] = [
   {
+    id:1,
     title: "Shang-Chi and the Legend of the Ten Rings",
     director: "Destin Daniel Cretton",
     duration: 132,
@@ -18,6 +19,7 @@ const defaultMovies: Movie[] = [
     budget: 150,
   },
   {
+    id:2,
     title: "The Matrix",
     director: "Lana Wachowski, Lilly Wachowski",
     duration: 136,
@@ -28,6 +30,7 @@ const defaultMovies: Movie[] = [
     budget: 63,
   },
   {
+    id:3,
     title: "Summer Wars",
     director: "Mamoru Hosoda",
     duration: 114,
@@ -38,6 +41,7 @@ const defaultMovies: Movie[] = [
     budget: 18.7,
   },
   {
+    id:4,
     title: "The Meyerowitz Stories",
     director: "Noah Baumbach",
     duration: 112,
@@ -47,6 +51,7 @@ const defaultMovies: Movie[] = [
       "An estranged family gathers together in New York City for an event celebrating the artistic work of their father.",
   },
   {
+    id:5,
     title: "her",
     director: "Spike Jonze",
     duration: 126,
@@ -59,18 +64,20 @@ const defaultMovies: Movie[] = [
 ];
 
 const App = () => {
+  const [movies, setMovies] = useState(defaultMovies);
+  const navigate = useNavigate();
 
-  const [movies,setMovies]=useState(defaultMovies);
-  const navigate=useNavigate();
-
-  const onMovieAdded =(newMovie:Movie)=>{
-    setMovies([...movies,newMovie]);
+  const onMovieAdded = (newMovie: NewMovie) => {
+    console.log("Movie to add:", newMovie);
+    const nextId = Math.max(...movies.map((movie) => movie.id)) + 1;
+    const movieToBeAdded = { id: nextId, ...newMovie };
+    setMovies([...movies, movieToBeAdded]);
     navigate("/movie-list");
-  }
+  };
 
-  const movieContext:MovieContext={
-   movies,
-   onMovieAdded
+  const movieContext: MovieContext = {
+    movies,
+    onMovieAdded,
   };
 
   return (
@@ -81,7 +88,7 @@ const App = () => {
       </Header>
 
       <main className="page-content">
-        <Outlet context={movieContext}/>
+        <Outlet context={movieContext} />
       </main>
 
       <Footer urlLogo="https://media.istockphoto.com/id/1202770152/fr/photo/bobine-de-film-disolement-sur-le-fond-jaune-lumineux-dans-les-couleurs-pastel.jpg?s=1024x1024&w=is&k=20&c=2yKBrC8oyimPdW-5IxFWN_zxFPVK3KWYL9OE2gVmVX4=">

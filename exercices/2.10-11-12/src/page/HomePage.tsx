@@ -1,5 +1,7 @@
+
 import PageTitle from "../components/PageTitle";
 const HomePage=()=>{
+
     return(
         <div>
             <PageTitle title="myMovies"/>

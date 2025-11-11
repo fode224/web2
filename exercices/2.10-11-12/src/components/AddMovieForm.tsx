@@ -1,10 +1,10 @@
 import  { useState } from "react";
 import type { SyntheticEvent } from "react";
-import type { Movie } from "../types";
+import type { NewMovie } from "../types";
 import "./AddMovieForm.css";
 
 interface AddMovieFormProps {
-  onMovieAdded: (movie: Movie) => void;
+  onMovieAdded: (movie: NewMovie) => void;
 }
 
 const AddMovieForm = ({ onMovieAdded }: AddMovieFormProps) => {
@@ -17,7 +17,7 @@ const AddMovieForm = ({ onMovieAdded }: AddMovieFormProps) => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    onMovieAdded({ title, director, duration, imageUrl, description, budget });
+    onMovieAdded({title, director, duration, imageUrl, description, budget });
     setTitle("");
     setDirector("");
     setDuration(0);
