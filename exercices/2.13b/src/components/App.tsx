@@ -1,33 +1,24 @@
+import { useState } from "react";
+import RandomDog from "./RandomDog";
 
-import { useState } from 'react';
-import RandomDog from './RandomDog'
+const App = () => {
+  const [refresh, SetRefresh] = useState(false);
 
-
-const App=()=> {
-  const [refresh,SetRefresh] =useState(false);
-
-  return(
+  return (
     <>
-
-    <div style={{ display: "flex", flexDirection: "row", gap: 10 }} >
-    <RandomDog key={`${refresh}1`} />
+      <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+        <RandomDog key={`${refresh}1`} />
         <RandomDog key={`${refresh}2`} />
         <RandomDog key={`${refresh}3`} />
-    </div>
+      </div>
 
-    <button
-    onClick={()=>SetRefresh(!refresh)}
-    style={{
-        marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "1em",
-          cursor: "pointer"
-    }}
-   >
-    Refresh page
-    </button>
+      <button
+        onClick={() => SetRefresh(!refresh)}
+      >
+        Refresh page
+      </button>
     </>
   );
 };
 
-export default App
+export default App;

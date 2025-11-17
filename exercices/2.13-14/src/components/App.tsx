@@ -9,8 +9,8 @@ const App=()=>{
 
   const[joke,setJoke] = useState<Joke|undefined>(undefined);
 
-
-  useEffect(()=>{
+ 
+  const fetchJoke=()=>{
     fetch("https://v2.jokeapi.dev/joke/Any?type=single")
     .then((response)=>{
       return response.json();
@@ -21,7 +21,12 @@ const App=()=>{
         category:data.category ?? "Unknown",
       });
     });
-  },[]);
+    };
+
+     useEffect(()=>{
+      fetchJoke();
+      setInterval(fetchJoke,10000);
+     },[]);
 
   if(!joke){
     return <p>Loading...</p>;
