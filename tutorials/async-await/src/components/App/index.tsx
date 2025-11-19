@@ -37,8 +37,7 @@ const App = () => {
   const [actionToBePerformed, setActionToBePerformed] = useState(false);
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
 
-
-  useEffect(() => {
+   useEffect(() => {
     fetchPizzas();
   }, []);
 
@@ -57,7 +56,6 @@ const App = () => {
       console.error("HomePage::error: ", err);
     }
   };
-
 
   const addPizza = (newPizza: NewPizza) => {
     const pizzaAdded = { ...newPizza, id: nextPizzaId(pizzas) };
