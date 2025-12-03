@@ -4,15 +4,25 @@ import Footer from "./Footer";
 import Header from "./Header";
 import NavBar from "./Navbar";
 import { useEffect, useState } from "react";
-import { Movie, MovieContext, NewMovie } from "../types";
+import { AuthenticatedUser, Movie, MovieContext, NewMovie, User } from "../types";
 import { addMovie, deleteMovie, fetchMovies } from "../utils/film-service";
-
+import { MaybeAuthenticatedUser } from "../types";
+import { clearAuthenticatedUser, getAuthenticatedUser, storeAuthenticatedUser } from "../utils/session";
 const App = () => {
   const currentTheme = localStorage.getItem("theme") ?? "dark";
   const [movies, setMovies] = useState<Movie[]>([]);
   const [theme,setTheme] =useState<"light" | "dark">(
     currentTheme as "light" | "dark"
   );
+
+
+  const clearUser=()=>{
+    clearAuthenticatedUser();
+    setAuthenticatedUser(undefined);
+  }
+
+  const [authenticatedUser, setAuthenticatedUser] =
+    useState<MaybeAuthenticatedUser>(undefined);
   const navigate = useNavigate();
 
   const initMovies = async () => {
@@ -26,6 +36,10 @@ const App = () => {
 
   useEffect(() => {
     initMovies();
+    const authenticatedUser=getAuthenticatedUser();
+    if(authenticatedUser){
+      setAuthenticatedUser(authenticatedUser);
+    }
   }, []);
 
   const onMovieAdded = async (newMovie: NewMovie) => {
@@ -52,10 +66,67 @@ const App = () => {
     }
   };
 
+  const registerUser = async(newUser:User)=>{
+    try{
+      const options={
+        method:"POST",
+        body:JSON.stringify(newUser),
+        headers:{
+          "Content-Type":"application/json",
+        },
+      };
+
+      const response= await fetch("/api/auths/register",options);
+
+      if(!response.ok)
+        throw new Error();
+
+      const createdUser:AuthenticatedUser= await response.json();
+
+      setAuthenticatedUser(createdUser);
+      storeAuthenticatedUser(createdUser);
+      console.log("createdUser:",createdUser);
+    }catch(err){
+      console.log("registerUser::error",err);
+      throw err;
+  }
+  };
+
+
+  const loginUser= async(user:User)=>{
+    try{
+      const options = {
+        method:"POST",
+        body:JSON.stringify(user),
+        Headers:{
+          "Content-Type":"application/json",
+        },
+      };
+
+      const response= await fetch("/api/auths/login",options);
+
+      if(!response.ok)
+        throw new Error();
+
+        const authenticatedUser:AuthenticatedUser= await response.json();
+        console.log("authenticatedUser: ", authenticatedUser);
+
+          setAuthenticatedUser(authenticatedUser);  
+          storeAuthenticatedUser(authenticatedUser);
+            }catch(err){
+            console.error("loginUser::error: ", err);
+             throw err;
+        }
+      
+  };
+
   const movieContext: MovieContext = {
     movies,
     onMovieAdded,
     onMovieDeleted,
+    registerUser,
+    loginUser
+    
   };
 
   const handleThemeChange =()=>{
@@ -69,10 +140,11 @@ const App = () => {
       <Header urlLogo="https://media.istockphoto.com/id/1429764305/fr/vectoriel/bande-de-film-vierge-isol%C3%A9e-sur-le-fond-blanc.jpg?s=1024x1024&w=is&k=20&c=is5Y6cun0NC8PxJd51p4YnUoLUpyb758Bdigh4Bqn48="
       theme={theme}>
         <h1>Tous sur les films</h1>
-        <NavBar />
+        
       </Header>
 
       <main className="page-content">
+        <NavBar authenticatedUser={authenticatedUser} clearUser={clearUser}/>
         <Outlet context={movieContext} />
       </main>
 

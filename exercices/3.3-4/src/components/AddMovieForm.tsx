@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from "react";
 import { NewMovie } from "../types";
-import "./AddMovieForm.css";
+import "./index.css";
 
 interface AddMovieFormProps {
   onMovieAdded: (movie: NewMovie) => void;
